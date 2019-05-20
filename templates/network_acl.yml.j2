@@ -1,0 +1,35 @@
+---
+
+Description: Network ACL ECS setup
+AWSTemplateFormatVersion: 2010-09-09
+
+Parameters:
+  VpcID:
+    Description: ID of the VPC for non js VPC
+    Type: AWS::EC2::VPC::Id
+
+Resources:
+  NetworkAcl:
+    Type: AWS::EC2::NetworkAcl
+    Properties:
+      VpcId:
+        Ref: VpcID
+
+{% for subnet_id in aws_network_acl_subnet_ids %}
+
+  NetworkAclAssociation{{ loop.index }}:
+    Type: AWS::EC2::SubnetNetworkAclAssociation
+    Properties:
+      NetworkAclId:
+        Ref: NetworkAcl
+      SubnetId: "{{ subnet_id }}"
+
+{% endfor %}
+
+{{ aws_network_acl_rules_transformed_for_cf | to_nice_yaml(indent=2) | indent(2, True) }}
+
+Outputs:
+  NetworkAcl:
+    Description: Private Network ACL ID for non js VPC
+    Value:
+      Ref: NetworkAcl
