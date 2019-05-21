@@ -1,1 +1,78 @@
 ---
+
+- name: Assert configuration
+  assert:
+    that:
+      - aws_network_acl_rules is not none and aws_network_acl_rules | length > 0
+      - aws_network_acl_region is not none and aws_network_acl_region | length > 0
+      - aws_network_acl_stack_name is not none and aws_network_acl_stack_name | length > 0
+      - aws_network_acl_subnet_ids is not none and aws_network_acl_subnet_ids | length > 0
+      - aws_network_acl_tags is not none and aws_network_acl_tags | length > 0
+      - aws_network_acl_tags.Name is not none
+      - aws_network_acl_vpc_id is not none and aws_network_acl_vpc_id | length > 0
+
+- name: Assert ACL rule configuration
+  assert:
+    that:
+      - item.cidr is not none
+      - item.direction is not none
+      - item.direction in ['both', 'egress', 'ingress']
+      - item.port is not none
+      - item.protocol in ['tcp', 'udp']
+      - item.rule_number is not none
+  with_items: "{{ aws_network_acl_rules }}"
+
+- name: Pick rules with a single direction
+  set_fact:
+    aws_network_acl_rules_transformed_for_direction: "{{ aws_network_acl_rules_transformed_for_direction +
+      [ item ]
+    }}"
+  when: item.direction != 'both'
+  with_items: "{{ aws_network_acl_rules }}"
+
+- name: Split rules listed as both directions
+  set_fact:
+    aws_network_acl_rules_transformed_for_direction: "{{ aws_network_acl_rules_transformed_for_direction +
+        [ item | combine({ 'direction': 'egress' }), item | combine({ 'direction': 'ingress', 'rule_number': ((item.rule_number | int) + 1) }) ]
+      }}"
+  when: item.direction == 'both'
+  with_items: "{{ aws_network_acl_rules }}"
+
+- name: Make rules Cloudformation compatible
+  set_fact:
+    aws_network_acl_rules_transformed_for_cf: |
+      {{
+        aws_network_acl_rules_transformed_for_cf | combine ({
+          "NetworkAcl" + item.rule_number | string : {
+            "Type": "AWS::EC2::NetworkAclEntry",
+            "Properties": {
+              "CidrBlock": item.cidr,
+              "Egress": 'true' if item.direction == 'egress' else 'false',
+              "NetworkAclId": { "Ref": "NetworkAcl" },
+              "PortRange": {
+                "From": item.port,
+                "To": item.port_to | default(item.port),
+              },
+              "Protocol": '17' if item.protocol == 'udp' else '6',
+              "RuleAction": item.action | default('allow'),
+              "RuleNumber": item.rule_number
+        } } })
+      }}
+  with_items: "{{ aws_network_acl_rules_transformed_for_direction }}"
+
+- name: Ensure Network ACL
+  cloudformation:
+    region: "{{ aws_network_acl_region }}"
+    stack_name: "{{ aws_network_acl_stack_name }}"
+    state: present
+    tags: "{{ aws_network_acl_tags }}"
+    template_body: "{{ lookup('template', role_path + '/templates/network_acl.yml.j2') }}"
+    template_parameters:
+      VpcID: "{{ aws_network_acl_vpc_id }}"
+  register: aws_network_acl_cf_output
+
+- name: Set output facts
+  set_fact:
+    aws_network_acl_output: "{{ aws_network_acl_output | combine({
+      aws_network_acl_tags.Name: aws_network_acl_cf_output
+    }) }}"

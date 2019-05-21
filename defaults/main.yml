@@ -1,1 +1,8 @@
 ---
+
+aws_network_acl_rules: []
+aws_network_acl_region: ~
+aws_network_acl_stack_name: ~
+aws_network_acl_subnet_ids: []
+aws_network_acl_tags: ~
+aws_network_acl_vpc_id: ~

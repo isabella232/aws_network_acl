@@ -1,7 +1,58 @@
 ---
 
-- name: Converge
-  hosts: all
+- name: Test Network ACL
+  hosts: localhost
+
+  environment:
+    EC2_URL: http://localhost:4581
+
+  pre_tasks:
+    - name: Create test VPC
+      cloudformation:
+        stack_name: test-vpc
+        state: present
+        region: eu-west-1
+        template: files/test_vpc.yml
+      register: test_vpc_data
 
   roles:
-    - role: ROLE_NAME
+    - role: aws_network_acl
+      aws_network_acl_rules:
+        - port: 22
+          rule_number: 100
+          protocol: 'tcp'
+          cidr: 0.0.0.0/0
+          direction: both
+        - port: 80
+          rule_number: 105
+          protocol: 'tcp'
+          cidr: 0.0.0.0/0
+          direction: both
+        - port: 123
+          rule_number: 110
+          protocol: 'udp'
+          cidr: 0.0.0.0/0
+          direction: both
+        - port: 443
+          rule_number: 115
+          protocol: 'tcp'
+          cidr: 0.0.0.0/0
+          direction: both
+        - port: 1024
+          port_to: 65535
+          rule_number: 120
+          protocol: 'tcp'
+          cidr: 0.0.0.0/0
+          direction: both
+        - port: 1024
+          port_to: 65535
+          rule_number: 125
+          protocol: 'udp'
+          cidr: 0.0.0.0/0
+          direction: both
+      aws_network_acl_region: eu-west-1
+      aws_network_acl_stack_name: test-network-acl
+      aws_network_acl_subnet_ids: "{{ test_vpc_data.stack_outputs.SubnetsPrivate.split(',') }}"
+      aws_network_acl_tags:
+        Name: dev_network_acl
+      aws_network_acl_vpc_id: "{{ test_vpc_data.stack_outputs.VpcID }}"
