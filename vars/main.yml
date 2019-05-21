@@ -1,5 +1,5 @@
 ---
 
-aws_network_acl_output: {}
-aws_network_acl_rules_transformed_for_cf: {}
-aws_network_acl_rules_transformed_for_direction: []
+sansible_aws_network_acl_output: {}
+sansible_aws_network_acl_rules_transformed_for_cf: {}
+sansible_aws_network_acl_rules_transformed_for_direction: []

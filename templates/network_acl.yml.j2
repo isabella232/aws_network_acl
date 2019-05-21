@@ -15,7 +15,7 @@ Resources:
       VpcId:
         Ref: VpcID
 
-{% for subnet_id in aws_network_acl_subnet_ids %}
+{% for subnet_id in sansible_aws_network_acl_subnet_ids %}
 
   NetworkAclAssociation{{ loop.index }}:
     Type: AWS::EC2::SubnetNetworkAclAssociation
@@ -26,7 +26,7 @@ Resources:
 
 {% endfor %}
 
-{{ aws_network_acl_rules_transformed_for_cf | to_nice_yaml(indent=2) | indent(2, True) }}
+{{ sansible_aws_network_acl_rules_transformed_for_cf | to_nice_yaml(indent=2) | indent(2, True) }}
 
 Outputs:
   NetworkAcl:
