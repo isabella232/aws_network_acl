@@ -25,19 +25,19 @@ and run `ansible-galaxy install -p ./roles -r roles.yml`
 
 |Variable|Default|Description|
 |---|---|---|
-|aws_network_acl_rules|[]|List of hashes for ACL rules|
-|aws_network_acl_rules.action|allow|Action to take based on rule|
-|aws_network_acl_rules.cidr|~|CIDR for ACL rule|
-|aws_network_acl_rules.direction|~|Direction for, can be egress, ingress or both|
-|aws_network_acl_rules.port|~|Port for ACL rule|
-|aws_network_acl_rules.port_to|port|Port to for the ACL, if left blank port is used|
-|aws_network_acl_rules.protocol|~|Protocol for ACL rule, can be tcp or udp|
-|aws_network_acl_rules.rule_number|~|Rule number for ACL rule, for rules that have a direction of both leave a gap between rules so allow for an egress and ingress rule|
-|aws_network_acl_region|~|AWS region for the NACL|
-|aws_network_acl_stack_name|~|Name for NACL CF stack|
-|aws_network_acl_subnet_ids|~|Subnets to attach NACL to|
-|aws_network_acl_tags|~|Tags for the NACL, you must specify a Name tag|
-|aws_network_acl_vpc_id|~|VPC to attach NACL to|
+|sansible_aws_network_acl_rules|[]|List of hashes for ACL rules|
+|sansible_aws_network_acl_rules.action|allow|Action to take based on rule|
+|sansible_aws_network_acl_rules.cidr|~|CIDR for ACL rule|
+|sansible_aws_network_acl_rules.direction|~|Direction for, can be egress, ingress or both|
+|sansible_aws_network_acl_rules.port|~|Port for ACL rule|
+|sansible_aws_network_acl_rules.port_to|port|Port to for the ACL, if left blank port is used|
+|sansible_aws_network_acl_rules.protocol|~|Protocol for ACL rule, can be tcp or udp|
+|sansible_aws_network_acl_rules.rule_number|~|Rule number for ACL rule, for rules that have a direction of both leave a gap between rules so allow for an egress and ingress rule|
+|sansible_aws_network_acl_region|~|AWS region for the NACL|
+|sansible_aws_network_acl_stack_name|~|Name for NACL CF stack|
+|sansible_aws_network_acl_subnet_ids|~|Subnets to attach NACL to|
+|sansible_aws_network_acl_tags|~|Tags for the NACL, you must specify a Name tag|
+|sansible_aws_network_acl_vpc_id|~|VPC to attach NACL to|
 
 ## Examples
 
@@ -49,7 +49,7 @@ Simply include role in your playbook:
 
   roles:
     - role: aws_network_acl
-      aws_network_acl_rules:
+      sansible_aws_network_acl_rules:
         - port: 22
           rule_number: 100
           protocol: 'tcp'
@@ -82,13 +82,13 @@ Simply include role in your playbook:
           protocol: 'udp'
           cidr: 0.0.0.0/0
           direction: both
-      aws_network_acl_region: eu-west-1
-      aws_network_acl_stack_name: dev-network-acl
-      aws_network_acl_subnet_ids:
+      sansible_aws_network_acl_region: eu-west-1
+      sansible_aws_network_acl_stack_name: dev-network-acl
+      sansible_aws_network_acl_subnet_ids:
         - some-subnet-id-1
         - some-subnet-id-2
-      aws_network_acl_tags:
+      sansible_aws_network_acl_tags:
         Name: dev-network-acl
-      aws_network_acl_vpc_id: some-vpc-id
+      sansible_aws_network_acl_vpc_id: some-vpc-id
 ```
 

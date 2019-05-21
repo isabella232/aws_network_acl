@@ -17,7 +17,7 @@
 
   roles:
     - role: aws_network_acl
-      aws_network_acl_rules:
+      sansible_aws_network_acl_rules:
         - port: 22
           rule_number: 100
           protocol: 'tcp'
@@ -50,9 +50,9 @@
           protocol: 'udp'
           cidr: 0.0.0.0/0
           direction: both
-      aws_network_acl_region: eu-west-1
-      aws_network_acl_stack_name: test-network-acl
-      aws_network_acl_subnet_ids: "{{ test_vpc_data.stack_outputs.SubnetsPrivate.split(',') }}"
-      aws_network_acl_tags:
+      sansible_aws_network_acl_region: eu-west-1
+      sansible_aws_network_acl_stack_name: test-network-acl
+      sansible_aws_network_acl_subnet_ids: "{{ test_vpc_data.stack_outputs.SubnetsPrivate.split(',') }}"
+      sansible_aws_network_acl_tags:
         Name: dev_network_acl
-      aws_network_acl_vpc_id: "{{ test_vpc_data.stack_outputs.VpcID }}"
+      sansible_aws_network_acl_vpc_id: "{{ test_vpc_data.stack_outputs.VpcID }}"
