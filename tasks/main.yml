@@ -76,3 +76,8 @@
     sansible_aws_network_acl_output: "{{ sansible_aws_network_acl_output | combine({
       sansible_aws_network_acl_tags.Name: sansible_aws_network_acl_cf_output
     }) }}"
+
+- name: Reset role vars for future runs
+  set_fact:
+    sansible_aws_network_acl_rules_transformed_for_cf: []
+    sansible_aws_network_acl_rules_transformed_for_direction: []
