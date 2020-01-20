@@ -16,7 +16,7 @@ To install run `ansible-galaxy install sansible.aws_network_acl` or add this to 
 
 ```YAML
 - name: sansible.aws_network_acl
-  version: v1.0
+  version: v1.1
 ```
 
 and run `ansible-galaxy install -p ./roles -r roles.yml`
